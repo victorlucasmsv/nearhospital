@@ -1,0 +1,204 @@
+
+body{
+  min-width: 348px;
+}
+
+#lat{
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#long {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#image {
+  margin-top: 25px;
+  margin-left: 50px;
+  position: absolute;
+}
+
+#images {
+  padding: 20px;
+  border: rgb(161, 158, 158) solid 1px;
+  padding-left: 19.3rem;
+  display: block;
+  border-radius: 1px 1px 10px 10px;
+  box-shadow: rgb(224, 218, 218) 10px 5px;
+
+}
+
+#img {
+  position: relative;
+
+  padding-top: 5px;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+#h2 {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  
+  /* text-align: center; */
+  
+  font-family: 'Dosis', sans-serif;
+  font-family: 'Epilogue', sans-serif;
+  font-family: 'Poppins', sans-serif;
+  color: rgb(99, 231, 187);
+  
+  
+}
+
+#btn {
+display: none;
+position: fixed;
+color: black;
+top: 90px;
+right: 20px;
+}
+
+ul
+{
+  list-style: none;
+  margin-bottom: 1.5rem;
+  padding: 0.7rem;
+  /* box-shadow: -1px 2px 15px -3px rgba(174,195,3,0.75); */
+  /* -webkit-box-shadow: -1px 2px 15px -3px rgba(174,195,3,0.75); */
+  /* -moz-box-shadow: -1px 2px 15px -3px rgba(174,195,3,0.75); */
+
+}
+
+body a{
+color: black;
+font-family: sans-serif;
+text-align: center;
+
+}
+
+
+.menu
+{
+  text-decoration: none;
+}
+
+body a:hover{
+background-color: rgba(0, 0, 0, .05);
+}
+
+#header {
+margin-top: 20px;
+display: flex;
+align-items: center;
+height: 70px;
+padding: 1rem;
+box-sizing: border-box;
+justify-content: space-between;
+background: #e7e7e7;
+border-radius: 10px 20px 10px ;
+border: black solid 1px;
+justify-content: center;
+}
+
+#cardapio 
+{
+  display: flex;
+  list-style: none ;
+  gap: .5rem; 
+}
+
+
+
+#cardapio a{
+display: block;
+padding: .5rem;
+}
+
+@media (max-width: 600px ) {
+#btn {
+  display: block;
+  position: fixed;
+color: black;
+top: 40px;
+right: 20px;
+}
+
+#h2{
+  position: fixed;
+  top: 20px;
+  left: 35%;
+  z-index: 100;
+}
+
+#cardapio {
+  display: block;
+  /* display: block; */
+  position: absolute;
+  width: 100%;
+  top: 70px;
+  right: 0px;
+  background: #e7e7e7;
+  height: 0px ;
+  transition: .6s;
+  z-index: 100;
+  visibility: hidden;
+  overflow-y: hidden;
+}
+#nav.active #cardapio  {
+   height: calc(100vh - 70px);
+   visibility: visible;
+   overflow-y: auto;
+}
+
+}
+
+#cardapio a{
+  padding: 1rem;
+  margin: 0 1rem;
+  border-bottom: 2px solid rgba(0, 0, 0, .05);
+}
+
+#main {
+  position: relative;
+  margin: 0px;
+  padding: 0px;
+  height: 10px;
+
+}
+
+
+#btn {
+  display: flex;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  gap: 0.5rem;
+}
+#hamburger {
+border-top: 2px solid;
+width: 20px;
+}
+#hamburger::after,#hamburger::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  margin-top: 5px;
+  transition: 0.3s;
+  position: relative;
+}
+#nav.active #hamburger {
+  border-top-color: transparent;
+}
+#nav.active #hamburger::before {
+  transform: rotate(135deg);
+}
+#nav.active #hamburger::after {
+  transform: rotate(-135deg);
+  top: -7px;
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<!--
+	Highlights by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Home</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="manifest" href="manifest.json">
+		
+		<meta name="description" content="NearHospital é um app que te dar algumas localizações de hospitais mais próximos de você!">	  
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="msapplication-TileImage" content="icons/152.png">
+		<meta name="msapplication-TileColor" content="#FFF">
+		<meta name="theme-color" content="#000" />
+		<link rel="shortcut icon" sizes="192x192" href="icons/192.png">
+		<link rel="shortcut icon" sizes="128x128" href="icons/128.png">
+	  
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="PWA Teste">
+		<link rel="apple-touch-icon" href="icons/152.png">
+		<link rel="apple-touch-icon" href="icons/appstore.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="icons/152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="icons/180.png">
+		<link rel="apple-touch-icon" sizes="167x167" href="icons/167.png">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		
+		<link rel="icon" type="image/png" href="icons/144.png">
+		
+		<style>
+			#logo{
+				border-radius: 20px;
+				margin-bottom: 2rem;
+				margin-top: 8rem;
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<section id="header">
+				<header class="major">
+					<img src="icons/152.png"  alt="Logo do NearHospital" id="logo">
+					<h1>NearHospital</h1>
+					<p>Acesso rápido à hospitais perto de você</p>
+						
+					<div class="actions special">
+						<ul class="actions special">
+							<button class="primary" style="border-radius: 5px; margin-top: 3rem;"><a href="map.html">Acessar Mapa</a></button>				
+						</ul>	
+					</div>
+				</header>				
+			</section>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+		
+			<script>
+				let newWorker;
+				if ('serviceWorker' in navigator) {
+				  navigator.serviceWorker.register('./service-worker.js').then(reg => {
+					reg.addEventListener('updatefound', () => {
+					  newWorker = reg.installing;
+					});
+				  });
+				  let refreshing;
+				  navigator.serviceWorker.addEventListener('controllerchange', function () {
+					if (refreshing) return;
+					window.location.reload();
+					refreshing = true;
+				  });
+				}
+			</script>
+			
+	</body>
+</html>

@@ -1,0 +1,330 @@
+    <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="hamburger.css">
+    
+		<meta name="description" content="NearHospital é um app que lhe dá algumas localizações de hospitais mais próximos de você!">	  
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="msapplication-TileImage" content="icons/152.png">
+		<meta name="msapplication-TileColor" content="#FFF">
+		<meta name="theme-color" content="#000" />
+		<link rel="shortcut icon" sizes="192x192" href="icons/192.png">
+		<link rel="shortcut icon" sizes="128x128" href="icons/128.png">
+	  
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="PWA Teste">
+		<link rel="apple-touch-icon" href="icons/152.png">
+		<link rel="apple-touch-icon" href="icons/appstore.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="icons/152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="icons/180.png">
+		<link rel="apple-touch-icon" sizes="167x167" href="icons/167.png">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		
+		<link rel="icon" type="image/png" href="icons/152.png">
+
+    <style>
+        #map
+        {
+            height: 100vh;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        
+    </style>
+</head>
+<body>
+
+    <h2 id="h2">NearHospital</h2>
+    
+    <main id="main">
+      
+        <header id="header">
+            <nav id="nav">
+                <button id="btn">
+            
+                    <span id="hamburger"></span>
+                
+                </button>
+                <!-- adicionar aqui no href para onde as opçoes vao levar -->
+            
+                <ul id="cardapio">  
+                    <li><a href="map.html" class="menu">Mapa Principal</a></li>
+                    <li><a href="listaHospitais.html" class="menu">Lista de Hospitais</a></li>
+                </ul>
+        
+            </nav>
+        </header>
+
+    </main>
+      
+      
+        
+        <div >
+        <a href="index.html">
+          <img id="img" height="23" width="24" src="images/botao-voltar.png" alt=" Seta para esquerda">
+        </a>  
+
+          
+          
+          
+        </div>
+       
+    <button id="traca" onclick="TracaRota()" style=" display: flexbox; font-size: 1.5em; position: fixed; z-index: 10; left: 50vw; top: 90vh; transform: translate(-50%, -50%); border-radius: 10px; background-color: rgb(2, 25, 121); color: whitesmoke;">Traçar a rota</button>
+    <div id="map" style="z-index: 0;"></div>
+    
+    <!--Mapa usado-->
+    <script src="mapa/leaflet.js"></script>
+    <script src="mapa/leaflet-routing-machine.js"></script>
+    <script>
+        // informações
+        const tipoUnidade = 1, nomeOficial = 2, tipoServico = 8, endereco = 9,
+              bairro = 10, telefone = 11, especialidade = 12, horario = 14,
+              lati = 16, long = 17;
+        
+        let lat, lon, obj = [];
+
+        let hospitaisMaisProximos = [];
+        
+        let points = [];
+
+        var map;
+
+        // Iniciando mapa
+        IniciandoMapa();
+
+        function IniciandoMapa()
+        {
+            map = L.map('map') // Define as coordenadas de Recife
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                maxZoom: 19,
+            }).addTo(map);
+
+            if ('geolocation' in navigator) 
+            {
+                // Adicione um marcador para a localização do usuário
+                navigator.geolocation.getCurrentPosition(function (position)
+                {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+
+                    // Iniciando mapa na localização do usuário
+                    map.setView([lat, lon], 15);
+
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup('Sua Localização Atual')
+                        .openPopup();
+
+                    // Pegando as distancias entre o usuário e os hospitais
+                    let distancias = ObterDistancias()
+                            
+                    // Pegando menores distancias
+                    let menoresDistancias = [];
+                    menoresDistancias = ObterMenoresDistancias(distancias);
+                    
+                    console.log(menoresDistancias);
+                    ObterHospitais(menoresDistancias);
+                    
+                    PreenchePontos();
+                    
+                }
+                
+                );
+            }
+            else
+            {
+                alert('Seu navegador não suporta geolocalização');
+            }
+        }
+        
+
+        // Obtendo os 10 hospitais mais próximos
+        
+
+
+        //#region funções da função obteHospitaisMaisProximos
+        function ObterDistancias()
+        {
+            let distancias = [];
+            let nomes = [];
+            let pos = 0;
+            let tam = obj.length;
+
+            for(let i = 0; i < tam; i++)
+            {
+                let distancia = calcCrow(lat, lon, obj[i][lati], obj[i][long]);
+                
+                // Filtro de Duplicação de localização e nome.
+                if(!distancias.includes(distancia) && !nomes.includes(obj[i][nomeOficial]))
+                {
+                    nomes[pos] = obj[i][nomeOficial];
+                    distancias[pos] = distancia; 
+                    pos++;
+                }
+
+            }
+
+            console.log(distancias)
+            return distancias;
+        }
+
+        function ObterMenoresDistancias(arr) 
+        {
+            // Ordena o array em ordem crescente
+            arr.sort((a, b) => a - b);
+
+            // Retorna os 10 primeiros elementos do array (os menores valores)
+            return arr.slice(0, 10);
+        }
+
+        function ObterHospitais(menoresDistancias)
+        {    
+            let tam = obj.length;
+            
+            // Pegando as coordenadas referênte a distância...
+            for(let i = 0; i < menoresDistancias.length; i++)
+            {
+                for(let j = 0; j < tam; j++)
+                {
+                    let distancia = calcCrow(lat, lon, obj[j][lati], obj[j][long]);  
+                    if( distancia == menoresDistancias[i])
+                    {
+                        hospitaisMaisProximos[i] = obj[j];
+                        hospitaisMaisProximos[i] = obj[j];
+                    }
+                }
+
+            }
+        }
+        //#endregion
+        
+        function PreenchePontos()
+        {
+            
+            for(let i = 0; i < hospitaisMaisProximos.length; i++)
+            {
+                let objPoint = {}; 
+                objPoint.tipoUnidade   = hospitaisMaisProximos[i][tipoUnidade];
+                objPoint.nomeOficial   = hospitaisMaisProximos[i][nomeOficial];
+                objPoint.tipoServico   = hospitaisMaisProximos[i][tipoServico];
+                objPoint.endereco      = hospitaisMaisProximos[i][endereco] +", "+ hospitaisMaisProximos[i][bairro];
+                objPoint.especialidade = hospitaisMaisProximos[i][especialidade];
+                objPoint.telefone      = hospitaisMaisProximos[i][telefone];
+                objPoint.horario       = hospitaisMaisProximos[i][horario];
+                objPoint.latLng        = [hospitaisMaisProximos[i][lati], hospitaisMaisProximos[i][long]];
+
+                // Armazenando dentro do array.
+                points[i] = objPoint;
+                
+            }
+            
+            points.forEach(function (point) 
+            {
+                L.marker(point.latLng).addTo(map).bindPopup(point.nomeOficial);
+            });
+
+        }
+        
+        // Pegando informações do json
+        fetch("hospitaisRecife.json")
+         .then(resposta => resposta.json()) // Pega o formato json e transforma em objeto
+          .then(function(coordenada){ obj = coordenada.records;})
+           
+       
+        // Atualize o tamanho do mapa quando a janela for redimensionada
+        window.addEventListener('resize', function () {
+            map.invalidateSize();
+        });
+
+
+
+        // Calculo de distância
+
+            // Código copiado do link: https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+
+            //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+            function calcCrow(lat1, lon1, lat2, lon2) 
+            {
+                var R = 6371; // km
+                var dLat = toRad(lat2-lat1);
+                var dLon = toRad(lon2-lon1);
+                var lat1 = toRad(lat1);
+                var lat2 = toRad(lat2);
+
+                var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                var d = R * c;
+                return d;
+            }
+
+        // Converts numeric degrees to radians
+        function toRad(Value) 
+        {
+            return Value * Math.PI / 180;
+        }
+
+        function TracaRota()
+        {
+            // fazendo botão desaparecer
+            let button = document.getElementById("traca");
+            button.setAttribute("style", "display: none;");
+
+            // Ativando rota.
+            L.Routing.control({
+             waypoints: [
+            L.latLng([lat, lon]), // Localização do usuário
+            L.latLng(points[0].latLng) // Destino mais próximo
+                ],
+                routeWhileDragging: true
+            }).addTo(map);
+
+        }
+       
+    </script>
+    <script>
+
+        const butao = document.getElementById('btn');
+
+        function toggleMenu(event) {
+            if (event.type === 'touchstart') event.preventDefault(); 
+            const nav = document.getElementById('nav');
+            nav.classList.toggle('active');
+
+        }
+
+
+        butao.addEventListener('click', toggleMenu);
+        butao.addEventListener('touchstart', toggleMenu);
+
+
+    </script>
+    <script>
+        let newWorker;
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./service-worker.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+              newWorker = reg.installing;
+            });
+          });
+          let refreshing;
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (refreshing) return;
+            window.location.reload();
+            refreshing = true;
+          });
+        }
+    </script>
+    
+</body>
+</html>
